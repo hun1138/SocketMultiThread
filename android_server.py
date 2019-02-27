@@ -29,7 +29,7 @@ while True:
 	try:
 		conn, addr = serverSocket.accept()
 		print "connection from [%s]" % str(addr)
-                databaseHandler = DatabaseHandler.DatabaseHandler()
+        databaseHandler = DatabaseHandler.DatabaseHandler()
 		SocketMultiThread.SocketThreadHandler(conn, databaseHandler).start()
 	except Exception as e:
 		print e
