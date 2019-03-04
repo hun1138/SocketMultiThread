@@ -22,75 +22,83 @@ class SocketThreadHandler(threading.Thread):
 		self.databaseHandler = databaseHandler
 
 	def loginHandler(self, strTemp):
-		businessData = strTemp.split('/')
-		strResult = self.databaseHandler.checkLogin(businessData)
+		companyData = strTemp.split('/')
+		name = companyData[0]
+		password = companyData[1]
+		strResult = self.databaseHandler.checkLogin(name, password)
 
 		if strResult == "TRUE":
-			strResult = self.databaseHandler.getBusinessDate(businessData[0])
 
-			if strResult != '0':
-				'''
-				userDate = datetime.datetime.strptime(strResult, "%Y-%m-%d")
-				checkDate = userDate + datetime.timedelta(days=30)
+			if name == "admin":
+				strResult = "ADMIN"
+			else:
+				strResult = self.databaseHandler.getCompanyLimitDate(name)
+				limitDate = datetime.datetime.strptime(strResult, "%Y-%m-%d")
+				# checkDate = userDate + datetime.timedelta(days=30)
 				nowDate = datetime.date.today()
 
-				if nowDate.strftime("%Y-%m-%d") > checkDate.strftime("%Y-%m-%d"):
+				if nowDate.strftime("%Y-%m-%d") > limitDate.strftime("%Y-%m-%d"):
 					strResult = "FALSE"
 				else:
-					strResult = "TRUE/" + checkDate.strftime("%Y-%m-%d")# strResult
-				'''
-				businessSearchLimit = self.databaseHandler.getBusinessSearchLimit(businessData[0])
-				strResult = "TRUE/" + str(businessSearchLimit)
-			elif strResult == '0':
-				strResult = "ADMIN"
+					strResult = "TRUE/" + self.databaseHandler.getCompanyPhoneNumber(name)
 
 		return strResult
 
-	def adminInsertHandler(self, strTemp):
-		businessData = strTemp.split('/')
-		strResult = self.databaseHandler.checkBusinessIDExist(businessData[0])
+	def addCompanyHandler(self, strTemp):
+		companyData = strTemp.split('/')
+		name = companyData[0]
+		password = companyData[1]
+		phoneNumber = companyData[2]
+
+		strResult = self.databaseHandler.checkCompanyNameExist(name)
 
 		if strResult == "FALSE":
-			strResult = self.databaseHandler.insertBusiness(businessData, str(ADD_NUM))
-			strResult = self.databaseHandler.getBusinessInfo(businessData)
-		elif strResult == "TRUE":
-			# bDate = self.databaseHandler.getBusinessDate(businessData)
-			# strResult = self.databaseHandler.updateBusinessDate(businessData, bDate)
-			searchLimitTemp = self.databaseHandler.getBusinessSearchLimit(businessData[0])
-			strResult = self.databaseHandler.updateBusinessSearchLimit(businessData[0], str(searchLimitTemp + ADD_NUM))
+			strResult = self.databaseHandler.insertCompany(name, password, phoneNumber)
 
-			strResult = "FALSE"
+		strResult = self.databaseHandler.getCompanyLimitDate(name)
+		limitDate = datetime.datetime.strptime(strResult, "%Y-%m-%d")
+		updateLimitDate = limitDate + datetime.timedelta(days=30)
+
+		for i in range(40):
+			tt = limitDate + datetime.timedelta(days=i)
+			print tt.strftime("%Y=%m-%d")
+
+		print updateLimitDate
+
+		strResult = self.databaseHandler.updateCompanyLimitDate(name, updateLimitDate.strftime("%Y=%m-%d"))
 
 		return strResult
 
+	def addInfoHandler(self, strTemp):
+		userInfoData = strTemp.split('/')
+		name = businessData[0]
+		socialNumber = businessData[1]
+		companyName = businessData[2]
+		phoneNumber = businessData[3]
+		date = businessData[4]
+
+		strResult = self.databaseHandler.checkUserInfoExist(name, socialNumber, companyName, phoneNumber, date)
+
+		if strResult == "FALSE":
+			strResult = self.databaseHandler.insertUserInfo(name, socialNumber, companyName, phoneNumber, date)
+
+		return strResult
+
+
 	def searchHandler(self, strTemp):
-		userData = strTemp.split('/')
+		userInfoData = strTemp.split('/')
+		name = businessData[0]
+		socialNumber = businessData[1]
+		companyName = businessData[2]
+		phoneNumber = businessData[3]
+		date = businessData[4]
 
-		searchLimitTemp = self.databaseHandler.getBusinessSearchLimit(userData[3])
+		strResult = self.databaseHandler.checkUserInfoExist(name, socialNumber, companyName, phoneNumber, date)
 
-		if searchLimitTemp > 0:
-			self.databaseHandler.updateBusinessSearchLimit(userData[3], str(searchLimitTemp - 1))
+		if strResult == "FALSE":
+			strResult = self.databaseHandler.insertUserInfo(name, socialNumber, companyName, phoneNumber, date)
 
-			strResult = self.databaseHandler.checkUserExist(userData)
-
-			if strResult == "FALSE":
-				self.databaseHandler.insertUser(userData)
-
-			dataTemp = self.databaseHandler.selectUser(userData)
-			self.databaseHandler.updateUser(dataTemp)
-			dataTemp = self.databaseHandler.selectUser(userData)
-
-			strResult = self.databaseHandler.checkUserInfoExist(str(dataTemp[0]), userData[3])
-
-			if strResult == "FALSE":
-				self.databaseHandler.insertUserInfo(str(dataTemp[0]), userData[3])
-
-			userInfoDataTemp = self.databaseHandler.selectBusinessUserInfo(str(dataTemp[0]), userData[3])
-			self.databaseHandler.updateUserInfo(userInfoDataTemp)
-			strResult = self.databaseHandler.selectUserInfo(str(dataTemp[0]))
-
-		elif searchLimitTemp <= 0:
-			strResult = "FALSE"
+		strResult = self.databaseHandler.selectUserInfo(name, socialNumber, companyName, phoneNumber, date)
 
 		return strResult
 
@@ -100,15 +108,15 @@ class SocketThreadHandler(threading.Thread):
 
 		checkData = data.split('#')
 		print "[%s] get data : %s" % (localtime, data)
-		
+
 		if checkData[0] == "LOGIN":
 			self.socket.send(self.loginHandler(checkData[1]))
-		elif checkData[0] == "ADMIN_INSERT":
-			self.socket.send(self.adminInsertHandler(checkData[1]))
+		elif checkData[0] == "ADD_COMPANY":
+			self.socket.send(self.addCompanyHandler(checkData[1]))
+		elif checkData[0] == "ADD_INFO":
+			self.socket.send(self.addInfoHandler(checkData[1]))
 		elif checkData[0] == "SEARCH":
 			self.socket.send(self.searchHandler(checkData[1]))
-		elif checkData[0] == "COUNT":
-			self.socket.send(str(self.databaseHandler.getBusinessSearchLimit(checkData[1])))
 
 		print ""
 
