@@ -59,13 +59,7 @@ class SocketThreadHandler(threading.Thread):
 		limitDate = datetime.datetime.strptime(strResult, "%Y-%m-%d")
 		updateLimitDate = limitDate + datetime.timedelta(days=30)
 
-		for i in range(40):
-			tt = limitDate + datetime.timedelta(days=i)
-			print tt.strftime("%Y=%m-%d")
-
-		print updateLimitDate
-
-		strResult = self.databaseHandler.updateCompanyLimitDate(name, updateLimitDate.strftime("%Y=%m-%d"))
+		strResult = self.databaseHandler.updateCompanyLimitDate(name, updateLimitDate.strftime("%Y-%m-%d"))
 
 		return strResult
 
