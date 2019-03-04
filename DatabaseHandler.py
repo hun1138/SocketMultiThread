@@ -24,7 +24,7 @@ class DatabaseHandler:
 		self.cursor = self.conn.cursor()
 		self.cursor.execute("set names utf8;")
 
-		'''
+		
 		self.cursor.execute("""CREATE TABLE IF NOT EXISTS company(
 			ID INT PRIMARY KEY AUTO_INCREMENT,
 			name CHAR(20) NOT NULL,
@@ -43,7 +43,7 @@ class DatabaseHandler:
 			searchDate CHAR(20) NOT NULL)
 			ENGINE=INNODB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_general_ci;
 			""")
-		'''
+		
 
 		self.conn.commit()
 
@@ -202,7 +202,7 @@ class DatabaseHandler:
 			queryTemp = "SELECT searchDate,companyName,phoneNumber FROM userInfo WHERE "
 			queryTemp += "name='" + name + "' AND "
 			queryTemp += "socialNumber='" + socialNumber + "' "
-			queryTemp += "ORDER BY searchDate"
+			queryTemp += "ORDER BY searchDate DESC"
 
 			print queryTemp
 
