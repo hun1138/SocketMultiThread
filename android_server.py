@@ -6,7 +6,7 @@ import DatabaseHandler
 
 # HOST = "192.168.43.149"
 
-HOST = "192.168.1.100"
+HOST = "192.168.0.7"
 
 # HOST = "203.253.21.114"
 # HOST = "43.230.2.26"
@@ -29,7 +29,7 @@ while True:
 	try:
 		conn, addr = serverSocket.accept()
 		print "connection from [%s]" % str(addr)
-        databaseHandler = DatabaseHandler.DatabaseHandler()
+		databaseHandler = DatabaseHandler.DatabaseHandler()
 		SocketMultiThread.SocketThreadHandler(conn, databaseHandler).start()
 	except Exception as e:
 		print e

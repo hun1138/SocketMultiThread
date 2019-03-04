@@ -65,11 +65,11 @@ class SocketThreadHandler(threading.Thread):
 
 	def addInfoHandler(self, strTemp):
 		userInfoData = strTemp.split('/')
-		name = businessData[0]
-		socialNumber = businessData[1]
-		companyName = businessData[2]
-		phoneNumber = businessData[3]
-		date = businessData[4]
+		name = userInfoData[0]
+		socialNumber = userInfoData[1]
+		companyName = userInfoData[2]
+		phoneNumber = userInfoData[3]
+		date = userInfoData[4]
 
 		strResult = self.databaseHandler.checkUserInfoExist(name, socialNumber, companyName, phoneNumber, date)
 
@@ -81,18 +81,18 @@ class SocketThreadHandler(threading.Thread):
 
 	def searchHandler(self, strTemp):
 		userInfoData = strTemp.split('/')
-		name = businessData[0]
-		socialNumber = businessData[1]
-		companyName = businessData[2]
-		phoneNumber = businessData[3]
-		date = businessData[4]
+		name = userInfoData[0]
+		socialNumber = userInfoData[1]
+		companyName = userInfoData[2]
+		phoneNumber = userInfoData[3]
+		date = userInfoData[4]
 
 		strResult = self.databaseHandler.checkUserInfoExist(name, socialNumber, companyName, phoneNumber, date)
 
 		if strResult == "FALSE":
 			strResult = self.databaseHandler.insertUserInfo(name, socialNumber, companyName, phoneNumber, date)
 
-		strResult = self.databaseHandler.selectUserInfo(name, socialNumber, companyName, phoneNumber, date)
+		strResult = self.databaseHandler.selectUserInfo(name, socialNumber)
 
 		return strResult
 

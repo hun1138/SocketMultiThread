@@ -142,7 +142,7 @@ class DatabaseHandler:
 
 	def updateCompanyLimitDate(self, name, limitDate):
 		try:
-			queryTemp = "UPDATE company SET limitDate=" + limitDate + " "
+			queryTemp = "UPDATE company SET limitDate='" + limitDate + "' "
 			queryTemp += "WHERE name='" + name + "'"
 
 			print queryTemp
@@ -158,7 +158,7 @@ class DatabaseHandler:
 	def checkUserInfoExist(self, name, socialNumber, companyName, phoneNumber, date):
 		try:
 			queryTemp = "SELECT EXISTS(SELECT * FROM userInfo WHERE "
-			queryTemp += "name='" + userID + "' AND "
+			queryTemp += "name='" + name + "' AND "
 			queryTemp += "socialNumber='" + socialNumber + "' AND "
 			queryTemp += "companyName='" + companyName + "' AND "
 			queryTemp += "phoneNumber='" + phoneNumber + "' AND "
